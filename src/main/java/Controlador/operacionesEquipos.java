@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,30 +19,36 @@ public class operacionesEquipos {
     boolean confirmacion = true;
 
     @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("/agregar")
-    public void alta (@QueryParam("codigoE") int codigoE, @QueryParam("añotT") int añotT, @QueryParam("partidosG") int partidosG,@QueryParam("partidosP") int partidosP, @QueryParam("partidosE") int partidosE, @QueryParam("posicionN") int posicionN, @QueryParam("mayorGD") int mayorGD, @QueryParam("mayorGR") int mayorGR, @QueryParam("nombreE") String  nombreE, @QueryParam("nombreEn") String  nombreEn, @QueryParam("codigoTemp") String  codigoTemp, @QueryParam("ciudadE") String  ciudadE, @QueryParam("estadoE") String estadoE){
+    public void alta (String equipo){
 
+
+            Gson gson = new Gson();
+
+            Equipo msg = gson.fromJson(equipo, Equipo.class);
 
             for (Equipo k:listae) {
-                if (k.getNombreE().equals(nombreE) && k.getCiudadE().equals(ciudadE)){
+                if (k.getNombreE().equals(msg.getNombreE()) && k.getCiudadE().equals(msg.getCiudadE())){
                     confirmacion = false;
                     System.out.println("Ya existe un equipo con ese nombre en la misma ciudad");
                     break;
                 }
-                if (k.getPosicionN() == posicionN){
+                if (k.getPosicionN() == msg.getPosicionN()){
                     confirmacion = false;
                     System.out.println("Posicion en el ranking nacional ya esta ocupada");
                 }
-                if (k.getNombreEn().equals(nombreEn) && k.getCodigoTemp() == codigoTemp && k.getAñotT() == añotT){
+                if (k.getNombreEn().equals(msg.getNombreEn()) && k.getCodigoTemp() == msg.getCodigoTemp() && k.getAñotT() == msg.getAñotT()){
                     confirmacion = false;
                     System.out.printf("Este entrenador estaba ocupado con otro equipo en este año y temporada");
                 }
             }
 
         if(confirmacion == true) {
-            Equipo equipo1 = new Equipo(codigoE, añotT, partidosG, partidosP, partidosE , posicionN, mayorGD, mayorGR, nombreE , nombreEn, codigoTemp, ciudadE, estadoE.charAt(0));
-            listae.add(equipo1);
+            listae.add(msg);
         }
+        System.out.println(listae.toString());
 
     }
 
@@ -69,7 +76,10 @@ public class operacionesEquipos {
     }
     @DELETE
     @Path("/eliminar")
-    public void  eliminar (@QueryParam("codigoE") int codigoE,@QueryParam("añoT") int añoT,@QueryParam("codigoTemp") String codigoTemp ) {
+    public void  eliminar (@QueryParam("codigoE") int codigoE,@QueryParam("añoT") int añoT,@QueryParam("codigoTemp") String codigoTemp, @QueryParam("jsonr") String jsonr) {
+
+
+
         for (Equipo k:listae) {
                 if ( k.getCodigoE() == codigoE && k.getAñotT() == añoT  && k.getCodigoTemp().equals(codigoTemp)){
                     if(k.getEstadoE() == 'B' || k.getPosicionN() > 28){
@@ -83,13 +93,18 @@ public class operacionesEquipos {
     }
 
     @PATCH
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/editar")
-    public void  editar (@QueryParam("codigoE") int codigoE,@QueryParam("añoT") int añoT,@QueryParam("codigoTemp") String codigoTemp ) {
+    public void  editar (@QueryParam("codigoE") int codigoE,@QueryParam("añoT") int añoT,@QueryParam("codigoTemp") String codigoTemp, String jsonR) {
+
+        Gson gson = new Gson();
+
+        Equipo equipo = gson.fromJson(jsonR, Equipo.class);
+
         for (Equipo k:listae) {
-            if ( k.getCodigoE() == codigoE ){
-                if(k.getEstadoE() != 'B'){
-                    k.setAñotT(añoT);
-                    k.setCodigoTemp(codigoTemp);
+            if ( k.getCodigoE() == codigoE && k.getAñotT() == añoT &&  k.getEstadoE() != 'B'){
+
+                k = equipo ;
 
                 }else{
                     System.out.println("No se encontro el equipo");
@@ -97,7 +112,7 @@ public class operacionesEquipos {
             }
         }
 
-    }
+
 
     @POST
     @Path("/consultar")
