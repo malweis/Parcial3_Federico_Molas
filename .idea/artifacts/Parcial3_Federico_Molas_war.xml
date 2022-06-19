@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Parcial3_Federico_Molas:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>Parcial3_Federico_Molas</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="Parcial3_Federico_Molas-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="Parcial3_Federico_Molas:war exploded" />
+    </root>
+  </artifact>
+</component>
